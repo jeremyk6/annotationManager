@@ -1,0 +1,22 @@
+[general]
+name=AnnotationManager
+qgisMinimumVersion=2.10
+description=Panel to manage annnotations
+version=0.1
+author=Jérémy Kalsron
+email=jeremy.kalsron@gmail.com
+
+about=Panel listing annotations and enable to hide/show it.
+
+homepage=https://github.com/jeremyk6/annotationManager
+tracker=https://github.com/jeremyk6/annotationManager/issues
+repository=https://github.com/jeremyk6/annotationManager
+
+tags=annnotations
+
+category=Plugins
+icon=icon.PNG
+
+experimental=True
+deprecated=False
+

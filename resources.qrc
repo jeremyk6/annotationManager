@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/plugins/annotationManager" >
+        <file>icon.png</file>
+        <file>resources/mActionDraw.png</file>
+        <file>resources/mActionRemoveAnnotation.png</file>
+    </qresource>
+</RCC>
