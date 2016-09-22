@@ -112,10 +112,12 @@ class AnnotationManager:
         return annotations
         
     def refreshAnnotations(self):
+        self.annotations = []
+        self.annotationsName = []
         for annotation in self.getAnnotations():
-            if annotation not in self.annotations:
-                self.annotations.append(annotation)
-                self.annotationsName.append('Annotation')
+            self.annotations.append(annotation)
+            self.annotationsName.append(annotation.document().toPlainText().replace('\n', '\\n'))
+
         i = 0
         to_del = []
         for annotation in self.annotations:
