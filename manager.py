@@ -116,7 +116,10 @@ class AnnotationManager:
         self.annotationsName = []
         for annotation in self.getAnnotations():
             self.annotations.append(annotation)
-            self.annotationsName.append(annotation.document().toPlainText().replace('\n', '\\n'))
+            title = annotation.document().toPlainText().replace('\n', ' ')
+            if len(title) > 40:
+                title = title[:40]+'(...)'
+            self.annotationsName.append(title)
 
         i = 0
         to_del = []
