@@ -3,5 +3,7 @@
         <file>icon.png</file>
         <file>resources/mActionDraw.png</file>
         <file>resources/mActionRemoveAnnotation.png</file>
+	<file>resources/mActionShowAll.png</file>
+	<file>resources/mActionHideAll.png</file>
     </qresource>
 </RCC>

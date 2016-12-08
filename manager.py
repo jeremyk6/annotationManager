@@ -18,7 +18,7 @@
 #along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt4.QtCore import SIGNAL, QTranslator, QSettings, Qt, QPoint, QSize
-from PyQt4.QtGui import QAction, QIcon, QDockWidget, QVBoxLayout, QListWidget, QListWidgetItem, QWidget, QToolBar, QColor
+from PyQt4.QtGui import QAction, QIcon, QDockWidget, QVBoxLayout, QListWidget, QListWidgetItem, QWidget, QToolBar, QColor, QToolButton, QMenu
 
 from qgis.core import *
 from qgis.gui import *
@@ -56,8 +56,22 @@ class AnnotationManager:
         action_refresh.triggered.connect(self.refreshAnnotations)
         action_remove = QAction(QIcon(':/plugins/annotationManager/resources/mActionRemoveAnnotation.png'), self.tr('Remove the selected annotation'), self.manager)
         action_remove.triggered.connect(self.removeAnnotation)
+
+        viewMenu = QMenu()
+        action_showAll = QAction(QIcon(':/plugins/annotationManager/resources/mActionShowAll.png'), self.tr('Show all annotations'), self.manager)
+        action_showAll.triggered.connect(self.showAll)
+        action_hideAll = QAction(QIcon(':/plugins/annotationManager/resources/mActionHideAll.png'), self.tr('Hide all annotations'), self.manager)
+        action_hideAll.triggered.connect(self.hideAll)
+        viewMenu.addAction(action_showAll)
+        viewMenu.addAction(action_hideAll)
+        viewButton = QToolButton()
+        viewButton.setIcon(QIcon(':/plugins/annotationManager/resources/mActionShowAll.png'))
+        viewButton.setPopupMode(2)
+        viewButton.setMenu(viewMenu)
+
         toolbar.addAction(action_refresh)
         toolbar.addAction(action_remove)
+        toolbar.addWidget(viewButton)
         toolbar.setIconSize(QSize(16, 16))
         
         p1_vertical = QVBoxLayout()
@@ -96,6 +110,16 @@ class AnnotationManager:
         rect = QgsRectangle(pt1, pt2)
         poly = QgsGeometry().fromRect(rect)
         self.rb.setToGeometry(poly, None)
+
+    def showAll(self):
+        count = self.annotationList.count()
+        for i in range(count):
+            self.annotationList.item(i).setCheckState(Qt.Checked)
+
+    def hideAll(self):
+        count = self.annotationList.count()
+        for i in range(count):
+            self.annotationList.item(i).setCheckState(Qt.Unchecked)
     
     def unload(self):
         del self.dock
