@@ -18,7 +18,7 @@
 #along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt4.QtCore import SIGNAL, QTranslator, QSettings, Qt, QPoint, QSize
-from PyQt4.QtGui import QAction, QIcon, QDockWidget, QVBoxLayout, QListWidget, QListWidgetItem, QWidget, QToolBar, QColor, QToolButton, QMenu
+from PyQt4.QtGui import QAction, QIcon, QDockWidget, QVBoxLayout, QListWidget, QListWidgetItem, QWidget, QToolBar, QColor, QToolButton, QMenu, QAbstractItemView
 
 from qgis.core import *
 from qgis.gui import *
@@ -50,7 +50,8 @@ class AnnotationManager:
         toolbar = QToolBar()
         
         self.annotationList = QListWidget()
-        self.annotationList.itemClicked.connect(self.selectAnnotation)
+        self.annotationList.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.annotationList.itemSelectionChanged.connect(self.selectAnnotation)
         self.annotationList.itemChanged.connect(self.checkItem)  
         action_refresh = QAction(QIcon(':/plugins/annotationManager/resources/mActionDraw.png'), self.tr('Refresh the annotations list'), self.manager)
         action_refresh.triggered.connect(self.refreshAnnotations)
@@ -100,16 +101,17 @@ class AnnotationManager:
                 self.rb.reset()
     
     def selectAnnotation(self):
-        index = self.annotationList.currentRow()
         self.rb.reset()
         self.rb.setColor(QColor(0,0,255, 128))
-        mapTool = QgsMapTool(self.iface.mapCanvas())
-        point = self.annotations[index].pos().toPoint()
-        pt1 = mapTool.toMapCoordinates(QPoint(point.x()-10, point.y()-10))
-        pt2 = mapTool.toMapCoordinates(QPoint(point.x()+10, point.y()+10))
-        rect = QgsRectangle(pt1, pt2)
-        poly = QgsGeometry().fromRect(rect)
-        self.rb.setToGeometry(poly, None)
+        for item in self.annotationList.selectedItems():
+            index = self.annotationList.row(item)
+            mapTool = QgsMapTool(self.iface.mapCanvas())
+            point = self.annotations[index].pos().toPoint()
+            pt1 = mapTool.toMapCoordinates(QPoint(point.x()-10, point.y()-10))
+            pt2 = mapTool.toMapCoordinates(QPoint(point.x()+10, point.y()+10))
+            rect = QgsRectangle(pt1, pt2)
+            poly = QgsGeometry().fromRect(rect)
+            self.rb.addGeometry(poly, None)
 
     def showAll(self):
         count = self.annotationList.count()
@@ -172,13 +174,14 @@ class AnnotationManager:
             
     def removeAnnotation(self):
         if len(self.annotationList.selectedItems())>0:
-            index = self.annotationList.currentRow()
-            self.annotationList.takeItem(index)
+            for item in self.annotationList.selectedItems():
+                index = self.annotationList.row(item)
+                self.annotationList.takeItem(index)
+                self.iface.mapCanvas().scene().removeItem(self.annotations[index])
+                self.annotations.pop(index)
+                self.annotationsName.pop(index)
             self.annotationList.clearSelection()
             self.annotationList.clearFocus()
-            self.iface.mapCanvas().scene().removeItem(self.annotations[index])
-            self.annotations.pop(index)
-            self.annotationsName.pop(index)
             self.rb.reset()
             
     def projectOpen(self):
