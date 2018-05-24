@@ -22,5 +22,13 @@
         <source>Hide all annotations</source>
         <translation>Cacher toutes les annotations</translation>
     </message>
+    <message>
+        <source>Show all selected annotations</source>
+        <translation>Afficher toutes les annotations sélectionnées</translation>
+    </message>
+    <message>
+        <source>Hide all selected annotations</source>
+        <translation>Cacher toutes les annotations sélectionnées</translation>
+    </message>
 </context>
 </TS>

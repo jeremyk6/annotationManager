@@ -63,8 +63,14 @@ class AnnotationManager:
         action_showAll.triggered.connect(self.showAll)
         action_hideAll = QAction(QIcon(':/plugins/annotationManager/resources/mActionHideAll.png'), self.tr('Hide all annotations'), self.manager)
         action_hideAll.triggered.connect(self.hideAll)
+        action_showAllSelected = QAction(QIcon(':/plugins/annotationManager/resources/mActionShowAll.png'), self.tr('Show all selected annotations'), self.manager)
+        action_showAllSelected.triggered.connect(self.showAllSelected)
+        action_hideAllSelected = QAction(QIcon(':/plugins/annotationManager/resources/mActionHideAll.png'), self.tr('Hide all selected annotations'), self.manager)
+        action_hideAllSelected.triggered.connect(self.hideAllSelected)
         viewMenu.addAction(action_showAll)
         viewMenu.addAction(action_hideAll)
+        viewMenu.addAction(action_showAllSelected)
+        viewMenu.addAction(action_hideAllSelected)
         viewButton = QToolButton()
         viewButton.setIcon(QIcon(':/plugins/annotationManager/resources/mActionShowAll.png'))
         viewButton.setPopupMode(2)
@@ -122,6 +128,14 @@ class AnnotationManager:
         count = self.annotationList.count()
         for i in range(count):
             self.annotationList.item(i).setCheckState(Qt.Unchecked)
+
+    def showAllSelected(self):
+        for item in self.annotationList.selectedItems():
+            item.setCheckState(Qt.Checked)
+
+    def hideAllSelected(self):
+        for item in self.annotationList.selectedItems():
+            item.setCheckState(Qt.Unchecked)
     
     def unload(self):
         del self.dock
