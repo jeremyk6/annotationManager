@@ -104,10 +104,10 @@ class AnnotationManager:
             self.annotations[row].hide()
             if item.isSelected():
                 item.setSelected(False)
-                self.rb.reset()
+                self.rb.reset(QGis.Polygon)
     
     def selectAnnotation(self):
-        self.rb.reset()
+        self.rb.reset(QGis.Polygon)
         self.rb.setColor(QColor(0,0,255, 128))
         for item in self.annotationList.selectedItems():
             index = self.annotationList.row(item)
@@ -196,7 +196,7 @@ class AnnotationManager:
                 self.annotationsName.pop(index)
             self.annotationList.clearSelection()
             self.annotationList.clearFocus()
-            self.rb.reset()
+            self.rb.reset(QGis.Polygon)
             
     def projectOpen(self):
         del self.annotations[:]
