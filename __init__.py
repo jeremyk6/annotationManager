@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# AnnotationManager: Panel to manage annnotations
+# AnnotationManager: Dock similar to the layer manager that enables to individually show or hide text annotation.
 # Author: Jérémy Kalsron
 #         jeremy.kalsron@gmail.com
 #

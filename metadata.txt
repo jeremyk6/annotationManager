@@ -6,7 +6,7 @@ version=0.4
 author=Jérémy Kalsron
 email=jeremy.kalsron@gmail.com
 
-about=Panel listing annotations and enable to hide/show it.
+about=Dock similar to the layer manager that enables to individually show or hide text annotation. Annotations names are based on their content.
 
 homepage=https://github.com/jeremyk6/annotationManager
 tracker=https://github.com/jeremyk6/annotationManager/issues
