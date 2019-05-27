@@ -6,7 +6,7 @@ version=0.4
 author=Jérémy Kalsron
 email=jeremy.kalsron@gmail.com
 
-about=Dock similar to the layer manager that enables to individually show or hide text annotation. Annotations names are based on their content.
+about=Dock similar to the layer manager that enables to individually show or hide text annotations. Annotations names are based on their content for text annotations and a generic "Annotation" for other types.
 
 homepage=https://github.com/jeremyk6/annotationManager
 tracker=https://github.com/jeremyk6/annotationManager/issues
