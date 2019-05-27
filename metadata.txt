@@ -2,7 +2,7 @@
 name=AnnotationManager
 qgisMinimumVersion=3.0
 description=Panel to manage annnotations
-version=0.4
+version=0.5
 author=Jérémy Kalsron
 email=jeremy.kalsron@gmail.com
 
