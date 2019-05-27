@@ -21,7 +21,7 @@ from qgis.PyQt.QtCore import QTranslator, QSettings, Qt, QPoint, QSize, QCoreApp
 from qgis.PyQt.QtGui import QIcon, QColor 
 from qgis.PyQt.QtWidgets import QWidget, QDockWidget, QListWidget, QListWidgetItem, QAbstractItemView, QAction, QVBoxLayout, QToolBar, QToolButton, QMenu
 
-from qgis.core import QgsWkbTypes, QgsAnnotationManager, QgsProject, QgsGeometry, QgsRectangle
+from qgis.core import QgsWkbTypes, QgsAnnotationManager, QgsProject, QgsGeometry, QgsRectangle, QgsTextAnnotation
 from qgis.gui import QgsMapTool, QgsRubberBand
 import os
 from . import resources
@@ -149,9 +149,11 @@ class AnnotationManager:
     def refreshAnnotationTitle(self, annotation=None):
         if annotation is None : annotation = self.project.annotationManager().sender()
         item = self.annotationList.item(self.annotationManager.annotations().index(annotation))
-        title = annotation.document().toPlainText().replace('\n', ' ')
-        if len(title) > 40:
-            title = title[:40]+'(...)'
+        title = 'Annotation'
+        if isinstance(annotation, QgsTextAnnotation):
+            title = annotation.document().toPlainText().replace('\n', ' ')
+            if len(title) > 40:
+                title = title[:40]+'(...)'
         item.setText(title)
 
     def refreshAnnotations(self):
