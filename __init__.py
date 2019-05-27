@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# QDraw: plugin that makes drawing easier
+# AnnotationManager: Panel to manage annnotations
 # Author: Jérémy Kalsron
 #         jeremy.kalsron@gmail.com
 #
@@ -14,8 +14,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-#You should have received a copy of the GNU General Public License
-#along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 def classFactory(iface):
     from .manager import AnnotationManager
