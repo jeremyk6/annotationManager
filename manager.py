@@ -17,14 +17,14 @@
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtCore import SIGNAL, QTranslator, QSettings, Qt, QPoint, QSize
-from PyQt4.QtGui import QAction, QIcon, QDockWidget, QVBoxLayout, QListWidget, QListWidgetItem, QWidget, QToolBar, QColor, QToolButton, QMenu, QAbstractItemView
+from qgis.PyQt.QtCore import QTranslator, QSettings, Qt, QPoint, QSize, QCoreApplication, QTranslator, qVersion
+from qgis.PyQt.QtGui import QAction, QIcon, QDockWidget, QVBoxLayout, QListWidget, QListWidgetItem, QWidget, QToolBar, QColor, QToolButton, QMenu, QAbstractItemView
 
-from qgis.core import *
-from qgis.gui import *
+from qgis.core import QgsWkbTypes
+from qgis.gui import QgsMapTool, QgsRubberBand
 
 import os
-import resources
+from . import resources
 
 class AnnotationManager:
 
@@ -40,6 +40,7 @@ class AnnotationManager:
             self.translator = QTranslator()
             self.translator.load(locale_path)
 
+        if qVersion() > '4.3.3':
             QCoreApplication.installTranslator(self.translator)
     
         self.iface = iface
@@ -91,7 +92,7 @@ class AnnotationManager:
         self.dock.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dock)
         
-        self.rb = QgsRubberBand(self.iface.mapCanvas(), QGis.Polygon)
+        self.rb = QgsRubberBand(self.iface.mapCanvas(), QgsWkbTypes.PolygonGeometry)
         self.annotations = []
         self.annotationsName = []
         
@@ -104,10 +105,10 @@ class AnnotationManager:
             self.annotations[row].hide()
             if item.isSelected():
                 item.setSelected(False)
-                self.rb.reset(QGis.Polygon)
+                self.rb.reset(QgsWkbTypes.PolygonGeometry)
     
     def selectAnnotation(self):
-        self.rb.reset(QGis.Polygon)
+        self.rb.reset(QgsWkbTypes.PolygonGeometry)
         self.rb.setColor(QColor(0,0,255, 128))
         for item in self.annotationList.selectedItems():
             index = self.annotationList.row(item)
@@ -196,7 +197,7 @@ class AnnotationManager:
                 self.annotationsName.pop(index)
             self.annotationList.clearSelection()
             self.annotationList.clearFocus()
-            self.rb.reset(QGis.Polygon)
+            self.rb.reset(QgsWkbTypes.PolygonGeometry)
             
     def projectOpen(self):
         del self.annotations[:]
