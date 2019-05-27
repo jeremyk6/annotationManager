@@ -18,11 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from qgis.PyQt.QtCore import QTranslator, QSettings, Qt, QPoint, QSize, QCoreApplication, QTranslator, qVersion
-from qgis.PyQt.QtGui import QAction, QIcon, QDockWidget, QVBoxLayout, QListWidget, QListWidgetItem, QWidget, QToolBar, QColor, QToolButton, QMenu, QAbstractItemView
+from qgis.PyQt.QtGui import QIcon, QColor 
+from qgis.PyQt.QtWidgets import QWidget, QDockWidget, QListWidget, QListWidgetItem, QAbstractItemView, QAction, QVBoxLayout, QToolBar, QToolButton, QMenu
 
-from qgis.core import QgsWkbTypes
+from qgis.core import QgsWkbTypes, QgsAnnotationManager, QgsProject, QgsGeometry, QgsRectangle
 from qgis.gui import QgsMapTool, QgsRubberBand
-
 import os
 from . import resources
 
@@ -93,16 +93,18 @@ class AnnotationManager:
         self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dock)
         
         self.rb = QgsRubberBand(self.iface.mapCanvas(), QgsWkbTypes.PolygonGeometry)
-        self.annotations = []
-        self.annotationsName = []
+
+        self.project = QgsProject.instance()
+        self.annotationManager = self.project.annotationManager()
+        self.annotationManager.annotationAdded.connect(self.refreshAnnotations)
+        self.annotationManager.annotationRemoved.connect(self.refreshAnnotations)
         
     def checkItem(self, item):
-        row = self.annotationList.row(item)
-        self.annotationsName[row] = item.text()
+        index = self.annotationList.row(item)
         if item.checkState() == Qt.Checked:
-            self.annotations[row].show()
+            self.annotationManager.annotations()[index].setVisible(True)
         else:
-            self.annotations[row].hide()
+            self.annotationManager.annotations()[index].setVisible(False)
             if item.isSelected():
                 item.setSelected(False)
                 self.rb.reset(QgsWkbTypes.PolygonGeometry)
@@ -113,7 +115,7 @@ class AnnotationManager:
         for item in self.annotationList.selectedItems():
             index = self.annotationList.row(item)
             mapTool = QgsMapTool(self.iface.mapCanvas())
-            point = self.annotations[index].pos().toPoint()
+            point = mapTool.toCanvasCoordinates(self.annotationManager.annotations()[index].mapPosition())
             pt1 = mapTool.toMapCoordinates(QPoint(point.x()-10, point.y()-10))
             pt2 = mapTool.toMapCoordinates(QPoint(point.x()+10, point.y()+10))
             rect = QgsRectangle(pt1, pt2)
@@ -144,64 +146,41 @@ class AnnotationManager:
     def tr(self, message):
         return QCoreApplication.translate('AnnotationManager', message)
 
-    def getAnnotations(self):
-        annotations = []
-        items = self.iface.mapCanvas().items()
-        for item in items:
-            if item.data(0) == 'AnnotationItem':
-                annotations.append(item)
-        return annotations
-        
-    def refreshAnnotations(self):
-        self.annotations = []
-        self.annotationsName = []
-        for annotation in self.getAnnotations():
-            self.annotations.append(annotation)
-            title = annotation.document().toPlainText().replace('\n', ' ')
-            if len(title) > 40:
-                title = title[:40]+'(...)'
-            self.annotationsName.append(title)
+    def refreshAnnotationTitle(self, annotation=None):
+        if annotation is None : annotation = self.project.annotationManager().sender()
+        item = self.annotationList.item(self.annotationManager.annotations().index(annotation))
+        title = annotation.document().toPlainText().replace('\n', ' ')
+        if len(title) > 40:
+            title = title[:40]+'(...)'
+        item.setText(title)
 
-        i = 0
-        to_del = []
-        for annotation in self.annotations:
-            if annotation not in self.getAnnotations():
-                to_del.append(i)
-            i += 1
-        i = 0
-        for index in to_del:
-            self.annotations.pop(index)
-            self.annotationsName.pop(index)       
+    def refreshAnnotations(self):
         self.annotationList.clearSelection()
         self.annotationList.clear()
-        
-        # argh
-        for annotation in self.annotations:
-            item = QListWidgetItem(self.annotationsName[i])
+        for annotation in self.annotationManager.annotations():
+            item = QListWidgetItem()
+            annotation.appearanceChanged.connect(self.refreshAnnotationTitle)
             if annotation.isVisible():
                 item.setCheckState(Qt.Checked)
             else:
                 item.setCheckState(Qt.Unchecked)
-            item.setFlags(item.flags() | Qt.ItemIsEditable)
+            item.setFlags(item.flags())
             self.annotationList.addItem(item)
-            i += 1
-        # fin argh
+            self.refreshAnnotationTitle(annotation)
             
     def removeAnnotation(self):
         if len(self.annotationList.selectedItems())>0:
+            self.annotationManager.annotationRemoved.disconnect()
+            trash = []
             for item in self.annotationList.selectedItems():
                 index = self.annotationList.row(item)
-                self.annotationList.takeItem(index)
-                self.iface.mapCanvas().scene().removeItem(self.annotations[index])
-                self.annotations.pop(index)
-                self.annotationsName.pop(index)
-            self.annotationList.clearSelection()
-            self.annotationList.clearFocus()
-            self.rb.reset(QgsWkbTypes.PolygonGeometry)
-            
+                trash.append(self.annotationManager.annotations()[index])
+            while trash:
+                self.annotationManager.removeAnnotation(trash.pop())
+            self.refreshAnnotations()
+            self.annotationManager.annotationRemoved.connect(self.refreshAnnotations)
+
     def projectOpen(self):
-        del self.annotations[:]
-        del self.annotationsName[:]
         self.refreshAnnotations()
         
     def initGui(self):
