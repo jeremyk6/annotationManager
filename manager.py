@@ -151,7 +151,7 @@ class AnnotationManager:
         item = self.annotationList.item(self.annotationManager.annotations().index(annotation))
         title = 'Annotation'
         if isinstance(annotation, QgsTextAnnotation):
-            title = annotation.document().toPlainText().replace('\n', ' ')
+            title = annotation.document().toPlainText().split('\n')[0]
             if len(title) > 40:
                 title = title[:40]+'(...)'
         item.setText(title)
