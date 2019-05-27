@@ -3,8 +3,8 @@
 <context>
     <name>AnnotationManager</name>
     <message>
-        <source>Annotations manager</source>
-        <translation>Gestionnaire d'annotations</translation>
+        <source>Annotations</source>
+        <translation>Annotations</translation>
     </message>
     <message>
         <source>Refresh the annotations list</source>

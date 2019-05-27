@@ -46,7 +46,7 @@ class AnnotationManager:
         self.iface = iface
         self.iface.projectRead.connect(self.projectOpen)
         
-        self.dock = QDockWidget(self.tr('Annotations manager') )
+        self.dock = QDockWidget(self.tr('Annotations') )
         self.manager = QWidget()
         toolbar = QToolBar()
         
